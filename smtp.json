@@ -1,0 +1,26 @@
+{
+    "states": ["IDLE", "CONNECTED", "READY","MAIL_SENT","RCPT_SENT","DATA_READY"],
+    "inputs": ["CONNECT", "EHLO", "MAIL", "RCPT", "DATA", "DATA_END", "QUIT"],
+    "outputs": ["221", "250", "503", "354", "502", "NULL"],
+    "transitions": {
+        "IDLE": [["CONNECT", "NULL", "CONNECTED"], ["EHLO", "NULL", "IDLE"], ["MAIL", "NULL", "IDLE"],
+        ["RCPT", "NULL", "IDLE"],["DATA", "NULL", "IDLE"],["DATA_END", "NULL", "IDLE"],["QUIT", "NULL", "IDLE"]],
+        "CONNECTED": [["EHLO", "250", "READY"], ["MAIL", "503", "CONNECTED"],["RCPT", "503", "CONNECTED"],
+        ["DATA", "503", "CONNECTED"],["DATA_END", "502", "CONNECTED"],["QUIT", "221", "IDLE"]],
+        "READY": [["EHLO", "250", "READY"], ["MAIL", "250", "MAIL_SENT"],["RCPT", "503", "READY"],
+        ["DATA", "503", "READY"],["DATA_END", "502", "READY"],["QUIT", "221", "IDLE"]],
+        "MAIL_SENT": [["EHLO", "250", "READY"], ["MAIL", "250", "MAIL_SENT"],["RCPT", "250", "RCPT_SENT"],
+        ["DATA", "503", "MAIL_SENT"],["DATA_END", "502", "MAIL_SENT"],["QUIT", "221", "IDLE"]],
+        "RCPT_SENT": [["EHLO", "250", "READY"], ["MAIL", "250", "MAIL_SENT"],["RCPT", "250", "RCPT_SENT"],
+        ["DATA", "354", "DATA_READY"],["DATA_END", "502", "RCPT_SENT"],["QUIT", "221", "IDLE"]],
+        "DATA_READY": [["EHLO", "NULL", "DATA_READY"], ["MAIL", "NULL", "DATA_READY"],["RCPT", "NULL", "DATA_READY"],
+        ["DATA", "NULL", "DATA_READY"],["DATA_END", "250", "READY"],["QUIT", "NULL", "DATA_READY"]]
+    },
+    "timeouts": {
+        "CONNECTED": ["IDLE",10],
+        "READY": ["IDLE",10],
+        "MAIL_SENT": ["IDLE",10],
+        "RCPT_SENT": ["IDLE",10],
+        "DATA_READY": ["IDLE",10]
+    }
+}

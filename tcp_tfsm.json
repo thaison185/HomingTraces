@@ -1,0 +1,77 @@
+{
+  "states": [
+    "CLOSED",
+    "LISTEN",
+    "SYN_RCVD",
+    "ESTABLISHED",
+    "CLOSE_WAIT",
+    "LAST_ACK"
+  ],
+  "inputs": [
+    "PASSIVE_OPEN",
+    "RCV_SYN",
+    "RCV_ACK",
+    "RCV_FIN",
+    "CLOSE",
+    "RCV_RST"
+  ],
+  "outputs": [
+    "SYN_ACK",
+    "ACK",
+    "FIN",
+    "NULL"
+  ],
+  "transitions": {
+    "CLOSED": [
+      ["PASSIVE_OPEN", "NULL", "LISTEN"],
+      ["RCV_SYN", "NULL", "CLOSED"],
+      ["RCV_ACK", "NULL", "CLOSED"],
+      ["RCV_FIN", "NULL", "CLOSED"],
+      ["CLOSE", "NULL", "CLOSED"],
+      ["RCV_RST", "NULL", "CLOSED"]
+    ],
+    "LISTEN": [
+      ["PASSIVE_OPEN", "NULL", "LISTEN"],
+      ["RCV_SYN", "SYN_ACK", "SYN_RCVD"],
+      ["RCV_ACK", "NULL", "LISTEN"],
+      ["RCV_FIN", "NULL", "LISTEN"],
+      ["CLOSE", "NULL", "CLOSED"],
+      ["RCV_RST", "NULL", "LISTEN"]
+    ],
+    "SYN_RCVD": [
+      ["PASSIVE_OPEN", "NULL", "SYN_RCVD"],
+      ["RCV_SYN", "NULL", "SYN_RCVD"],
+      ["RCV_ACK", "NULL", "ESTABLISHED"],
+      ["RCV_FIN", "NULL", "SYN_RCVD"],
+      ["CLOSE", "NULL", "SYN_RCVD"],
+      ["RCV_RST", "NULL", "CLOSED"]
+    ],
+    "ESTABLISHED": [
+      ["PASSIVE_OPEN", "NULL", "ESTABLISHED"],
+      ["RCV_SYN", "NULL", "ESTABLISHED"],
+      ["RCV_ACK", "NULL", "ESTABLISHED"],
+      ["RCV_FIN", "ACK", "CLOSE_WAIT"],
+      ["CLOSE", "NULL", "ESTABLISHED"],
+      ["RCV_RST", "NULL", "CLOSED"]
+    ],
+    "CLOSE_WAIT": [
+      ["PASSIVE_OPEN", "NULL", "CLOSE_WAIT"],
+      ["RCV_SYN", "NULL", "CLOSE_WAIT"],
+      ["RCV_ACK", "NULL", "CLOSE_WAIT"],
+      ["RCV_FIN", "NULL", "CLOSE_WAIT"],
+      ["CLOSE", "FIN", "LAST_ACK"],
+      ["RCV_RST", "NULL", "CLOSED"]
+    ],
+    "LAST_ACK": [
+      ["PASSIVE_OPEN", "NULL", "LAST_ACK"],
+      ["RCV_SYN", "NULL", "LAST_ACK"],
+      ["RCV_ACK", "NULL", "CLOSED"],
+      ["RCV_FIN", "NULL", "LAST_ACK"],
+      ["CLOSE", "NULL", "LAST_ACK"],
+      ["RCV_RST", "NULL", "LAST_ACK"]
+    ]
+  },
+  "timeouts": {
+    "CLOSE_WAIT": ["CLOSED", 3]
+  }
+}

@@ -1,0 +1,50 @@
+{
+    "states": ["DISCONNECTED","AUTHORIZATION","TRANSACTION","UPDATE"],
+    "inputs": ["CONNECT","QUIT","USER","PASS","STAT","RETR","DELE"],
+    "outputs": ["+OK","-ERR","NULL"],
+    "transitions": {
+        "DISCONNECTED": [
+        ["CONNECT", "+OK", "AUTHORIZATION"],
+        ["QUIT", "NULL", "DISCONNECTED"],
+        ["USER", "NULL", "DISCONNECTED"],
+        ["PASS", "NULL", "DISCONNECTED"],
+        ["STAT", "NULL", "DISCONNECTED"],
+        ["RETR", "NULL", "DISCONNECTED"],
+        ["DELE", "NULL", "DISCONNECTED"]
+        ],
+        "AUTHORIZATION": [
+        ["CONNECT", "-ERR", "AUTHORIZATION"],
+        ["USER", "+OK", "AUTHORIZATION"],
+        ["PASS", "+OK", "TRANSACTION"],
+        ["PASS", "-ERR", "AUTHORIZATION"],
+        ["QUIT", "+OK", "DISCONNECTED"],
+        ["STAT", "-ERR", "AUTHORIZATION"],
+        ["RETR", "-ERR", "AUTHORIZATION"],
+        ["DELE", "-ERR", "AUTHORIZATION"]
+        ],
+        "TRANSACTION": [
+        ["CONNECT", "-ERR", "TRANSACTION"],
+        ["USER", "-ERR", "TRANSACTION"],
+        ["PASS", "-ERR", "TRANSACTION"],
+        ["STAT", "+OK", "TRANSACTION"],
+        ["RETR", "+OK", "TRANSACTION"],
+        ["DELE", "+OK", "TRANSACTION"],
+        ["DELE", "-ERR", "TRANSACTION"],
+        ["QUIT", "+OK", "UPDATE"]
+        ],
+        "UPDATE": [
+        ["CONNECT", "NULL", "UPDATE"],
+        ["QUIT", "+OK", "DISCONNECTED"],
+        ["USER", "NULL", "UPDATE"],
+        ["PASS", "NULL", "UPDATE"],
+        ["STAT", "NULL", "UPDATE"],
+        ["RETR", "NULL", "UPDATE"],
+        ["DELE", "NULL", "UPDATE"]
+        ]
+    },
+    "timeouts": {
+        "AUTHORIZATION": ["DISCONNECTED", 10],
+        "TRANSACTION": ["DISCONNECTED", 10],
+        "UPDATE": ["DISCONNECTED", 10]
+    }
+}

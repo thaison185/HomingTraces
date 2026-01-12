@@ -1,0 +1,27 @@
+{
+    "states": ["DISCONNECTED","AUTHORIZATION","TRANSACTION","UPDATE"],
+    "inputs": ["CONNECT","USER","PASS","STAT","RETR","DELE","QUIT"],
+    "outputs": ["OK","ERR"],
+    "variables": {
+        "user": false,
+        "msg_count": 2
+    },
+    "transitions": [
+        {"from": "DISCONNECTED","input": "CONNECT","guard": "","action": "","output": "OK","to": "AUTHORIZATION"},
+        {"from": "AUTHORIZATION","input": "USER","guard": "","action": "user = True","output": "OK","to": "AUTHORIZATION"},
+        {"from": "AUTHORIZATION","input": "PASS","guard": "user == True","action": "","output": "OK","to": "TRANSACTION"},
+        {"from": "AUTHORIZATION","input": "PASS","guard": "user == True","action": "","output": "ERR","to": "AUTHORIZATION"},
+        {"from": "TRANSACTION","input": "STAT","guard": "","action": "","output": "OK","to": "TRANSACTION"},
+        {"from": "TRANSACTION","input": "RETR","guard": "msg_count > 0","action": "","output": "OK","to": "TRANSACTION"},
+        {"from": "TRANSACTION","input": "RETR","guard": "msg_count == 0","action": "","output": "ERR","to": "TRANSACTION"},
+        {"from": "TRANSACTION","input": "DELE","guard": "msg_count > 0","action": "msg_count -= 1","output": "OK","to": "TRANSACTION"},
+        {"from": "TRANSACTION","input": "DELE","guard": "msg_count == 0","action": "","output": "ERR","to": "TRANSACTION"},
+        {"from": "TRANSACTION","input": "QUIT","guard": "","action": "user = False","output": "OK","to": "UPDATE"},
+        {"from": "UPDATE","input": "QUIT","guard": "","action": "user = False","output": "OK","to": "DISCONNECTED"},
+        {"from": "AUTHORIZATION","input": "QUIT","guard": "","action": "user = False","output": "OK","to": "DISCONNECTED"},
+        {"from": "DISCONNECTED","input": "QUIT","guard": "","action": "user = False","output": "ERR","to": "DISCONNECTED"},
+        {"from": "TRANSACTION","input": "USER","guard": "","action": "","output": "ERR","to": "TRANSACTION"},
+        {"from": "TRANSACTION","input": "PASS","guard": "","action": "","output": "ERR","to": "TRANSACTION"},
+        {"from": "UPDATE","input": "CONNECT","guard": "","action": "","output": "ERR","to": "UPDATE"}
+    ]
+}

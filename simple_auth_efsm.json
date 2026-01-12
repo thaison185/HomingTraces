@@ -1,0 +1,24 @@
+{
+  "states": ["DISCONNECTED", "CONNECTED", "AUTHENTICATED"],
+  "inputs": ["CONNECT", "CREDENTIAL", "CLOSE", "LOGOUT"],
+  "outputs": ["OK", "ERR"],
+  "variables": {"locked": false, "failed_attempts": 0},
+  "transitions": [
+    {"from": "DISCONNECTED", "input": "CONNECT", "guard": "locked == False",
+    "action": "locked = False; failed_attempts = 0", "output": "OK","to": "CONNECTED"},
+    {"from": "DISCONNECTED", "input": "CONNECT", "guard": "locked == True",
+    "action": "", "output": "ERR", "to": "DISCONNECTED"},
+    {"from": "CONNECTED", "input": "CREDENTIAL", "guard": "locked == False and failed_attempts < 5",
+    "action": "failed_attempts = 0", "output": "OK", "to": "AUTHENTICATED"},
+    {"from": "CONNECTED", "input": "CREDENTIAL", "guard": "locked == False and failed_attempts < 5",
+    "action": "failed_attempts += 1", "output": "ERR", "to": "CONNECTED"},
+    {"from": "CONNECTED", "input": "CREDENTIAL", "guard": "failed_attempts >= 5",
+    "action": "locked = True", "output": "ERR", "to": "DISCONNECTED"},
+    {"from": "AUTHENTICATED", "input": "LOGOUT", "guard": "",
+    "action": "", "output": "OK", "to": "DISCONNECTED"},
+    {"from": "AUTHENTICATED", "input": "CLOSE", "guard": "",
+    "action": "", "output": "OK", "to": "DISCONNECTED"},
+    {"from": "CONNECTED", "input": "CLOSE", "guard": "",
+    "action": "", "output": "OK", "to": "DISCONNECTED"}
+  ]
+}
